@@ -363,6 +363,10 @@ const char *jsonObject::value_convert_error(jsonKeyValue *json, const char *aim_
 //    return error_msg;
 }
 
+bool jsonObject::has(const char *key){
+    return get(key)!=NULL;
+}
+
 const char *jsonObject::getString(const char *key) {
     jsonKeyValue *item = get(key);
     if (item && item->value) {
@@ -418,6 +422,28 @@ int jsonObject::getInt(const char *key) {
             case jsonValue::TYPE_ARRAY:
             case jsonValue::TYPE_OBJECT:
                 throw std::runtime_error(value_convert_error(item, "int"));
+            default:
+                throw std::runtime_error(no_value_for(key));
+        }
+    }
+    throw std::runtime_error(no_value_for(key));
+}
+
+long jsonObject::getLong(const char *key) {
+    jsonKeyValue *item = get(key);
+    if (item && item->value) {
+        switch (item->value->value_type) {
+            case jsonValue::TYPE_NUMBER:
+                return (long) item->value->number_value;
+            case jsonValue::TYPE_STRING:
+                if (check_if_num(item->value->string_value, strlen(item->value->string_value))) {
+                    return (long) get_num(item->value->string_value, strlen(item->value->string_value));
+                }
+            case jsonValue::TYPE_BOOL:
+            case jsonValue::TYPE_NULL:
+            case jsonValue::TYPE_ARRAY:
+            case jsonValue::TYPE_OBJECT:
+                throw std::runtime_error(value_convert_error(item, "long"));
             default:
                 throw std::runtime_error(no_value_for(key));
         }
@@ -759,6 +785,28 @@ int jsonArray::getInt(int index) {
             case jsonValue::TYPE_ARRAY:
             case jsonValue::TYPE_OBJECT:
                 throw std::runtime_error(value_convert_error(item, index, "int"));
+            default:
+                throw std::runtime_error(no_value_for(index));
+        }
+    }
+    throw std::runtime_error(no_value_for(index));
+}
+
+long jsonArray::getLong(int index) {
+    jsonValue *item = get(index);
+    if (item) {
+        switch (item->value_type) {
+            case jsonValue::TYPE_NUMBER:
+                return item->number_value;
+            case jsonValue::TYPE_STRING:
+                if (check_if_num(item->string_value, strlen(item->string_value))) {
+                    return get_num(item->string_value, strlen(item->string_value));
+                }
+            case jsonValue::TYPE_BOOL:
+            case jsonValue::TYPE_NULL:
+            case jsonValue::TYPE_ARRAY:
+            case jsonValue::TYPE_OBJECT:
+                throw std::runtime_error(value_convert_error(item, index, "long"));
             default:
                 throw std::runtime_error(no_value_for(index));
         }

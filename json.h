@@ -100,12 +100,15 @@ public:
 
     ~jsonObject();
 
+    bool has(const char *key);
 
     const char *getString(const char *key);
 
     double getDouble(const char *key);
 
     int getInt(const char *key);
+
+    long getLong(const char *key);
 
     bool getBool(const char *key);
 
@@ -167,6 +170,8 @@ public:
 
     int getInt(int index);
 
+    long getLong(int index);
+
     bool getBool(int index);
 
     jsonObject *getJsonObject(int index);
@@ -187,11 +192,11 @@ public:
 
     const char *toString();
 
+    int toString(char *buff);
+
     int length();
 
 private:
-    int toString(char *buff);
-
     jsonValue *get(int index);
 
     jsonValue *put();
