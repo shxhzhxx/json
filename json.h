@@ -25,9 +25,9 @@ int find_char(const char *raw, int len, char c);
  * */
 int find_quote(const char *raw, int len);
 
-bool check_if_num(const char *raw, int len);
+bool check_if_num(const char *raw, int len,bool exponential=true);
 
-double get_num(const char *raw, int len);
+double get_num(const char *raw, int len,bool exponential=true);
 
 int num_to_char(double number, char *buff = NULL);
 

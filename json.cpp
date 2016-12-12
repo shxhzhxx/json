@@ -33,9 +33,30 @@ int find_quote(const char *raw, int len) {
     return -1;
 }
 
-bool check_if_num(const char *raw, int len) {
+bool check_if_num(const char *raw, int len ,bool exponential) {
     int i = 0;
     int decimal = find_char(raw, len, '.');
+    int e_i=-1;
+    if(exponential && ((e_i=find_char(raw,len,'e'))!=-1 || (e_i=find_char(raw,len,'E'))!=-1)){
+        if(len>e_i+1){
+            if(raw[e_i+1]=='+'){
+                if(len>e_i+2){
+                    if(!check_if_num(raw+e_i+2,len-e_i-2,false)){
+                        return false;
+                    }
+                }else{
+                    return false;
+                }
+            }else{
+                if(!check_if_num(raw+e_i+1,len-e_i-1,false)){
+                    return false;
+                }
+            }
+        }else{
+            return false;
+        }
+        len=e_i;
+    }
     if (raw[0] == '-') {
         ++i;
     }
@@ -55,10 +76,28 @@ bool check_if_num(const char *raw, int len) {
     return true;
 }
 
-double get_num(const char *raw, int len) {
+double get_num(const char *raw, int len ,bool exponential) {
     double result = 0;
     int i = 0;
     int decimal = find_char(raw, len, '.');
+    int e_i=-1;
+    int e;
+    if(exponential && ((e_i=find_char(raw,len,'e'))!=-1 || (e_i=find_char(raw,len,'E'))!=-1)){
+        if(len>e_i+1){
+            if(raw[e_i+1]=='+'){
+                if(len>e_i+2){
+                    e=get_num(raw+e_i+2,len-e_i-2,false);
+                }else{
+                    throw std::runtime_error("invalid param for get_num");
+                }
+            }else{
+                e=get_num(raw+e_i+1,len-e_i-1,false);
+            }
+        }else{
+            throw std::runtime_error("invalid param for get_num");
+        }
+        len=e_i;
+    }
     if (raw[0] == '-') {
         ++i;
     }
@@ -79,6 +118,9 @@ double get_num(const char *raw, int len) {
     }
     if (raw[0] == '-') {
         result = -result;
+    }
+    if(e_i!=-1){
+        result=result*pow(10, e);
     }
     return result;
 }
