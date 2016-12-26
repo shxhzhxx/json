@@ -335,8 +335,6 @@ jsonObject::jsonObject(const char *_raw, int len) : raw(0), first(0), error_msg(
     process_raw(copy_raw(_raw, len));
 }
 
-jsonObject::jsonObject() : raw(0), first(0), error_msg(0) {}
-
 jsonObject::~jsonObject() {
     delete[]raw;
     delete[]error_msg;
@@ -353,27 +351,29 @@ void jsonObject::process_raw(int raw_len) {
     if ((f = find_char(raw + i, raw_len - i, ',')) == -1 && (f = find_char(raw + i, raw_len - i, '}')) == -1) {//error
         throw std::runtime_error("invalid json format");
     }
-    first = new jsonKeyValue(raw + i, f);
-    jsonKeyValue *end = first;
-    i += f;
-    while (i + 1 < raw_len && raw[i] == ',') {
-        i = i + 1;
-        if ((f = find_char(raw + i, raw_len - i, ',')) == -1 &&
-            (f = find_char(raw + i, raw_len - i, '}')) == -1) {//error
-            throw std::runtime_error("invalid json format");
-        }
-        jsonKeyValue *new_p = new jsonKeyValue(raw + i, f);
-        jsonKeyValue *find_p = get(new_p->key);
-        if (find_p) {
-            delete find_p->value;
-            find_p->value = new_p->value;
-            new_p->value = 0;
-            delete new_p;
-        } else {
-            end->next = new_p;
-            end = end->next;
-        }
+    if(f>0){
+        first = new jsonKeyValue(raw + i, f);
+        jsonKeyValue *end = first;
         i += f;
+        while (i + 1 < raw_len && raw[i] == ',') {
+            i = i + 1;
+            if ((f = find_char(raw + i, raw_len - i, ',')) == -1 &&
+                (f = find_char(raw + i, raw_len - i, '}')) == -1) {//error
+                throw std::runtime_error("invalid json format");
+            }
+            jsonKeyValue *new_p = new jsonKeyValue(raw + i, f);
+            jsonKeyValue *find_p = get(new_p->key);
+            if (find_p) {
+                delete find_p->value;
+                find_p->value = new_p->value;
+                new_p->value = 0;
+                delete new_p;
+            } else {
+                end->next = new_p;
+                end = end->next;
+            }
+            i += f;
+        }
     }
     if (i + 1 != raw_len || raw[i] != '}') {//error
         throw std::runtime_error("invalid json format");
@@ -702,8 +702,6 @@ jsonArray::jsonArray(const char *_raw, int len) : raw(0), first(0), error_msg(0)
     process_raw(copy_raw(_raw, len));
 }
 
-jsonArray::jsonArray() : raw(0), first(0), error_msg(0) {}
-
 jsonArray::~jsonArray() {
     delete[]error_msg;
     delete[]raw;
@@ -720,18 +718,20 @@ void jsonArray::process_raw(int raw_len) {
     if ((f = find_char(raw + i, raw_len - i, ',')) == -1 && (f = find_char(raw + i, raw_len - i, ']')) == -1) {//error
         throw std::runtime_error("invalid json format");
     }
-    first = new jsonValue(raw + i, f);
-    jsonValue *end = first;
-    i += f;
-    while (i + 1 < raw_len && raw[i] == ',') {
-        ++i;
-        if ((f = find_char(raw + i, raw_len - i, ',')) == -1 &&
-            (f = find_char(raw + i, raw_len - i, ']')) == -1) {//error
-            throw std::runtime_error("invalid json format");
-        }
-        end->next = new jsonValue(raw + i, f);
-        end = end->next;
+    if(f>0){
+        first = new jsonValue(raw + i, f);
+        jsonValue *end = first;
         i += f;
+        while (i + 1 < raw_len && raw[i] == ',') {
+            ++i;
+            if ((f = find_char(raw + i, raw_len - i, ',')) == -1 &&
+                (f = find_char(raw + i, raw_len - i, ']')) == -1) {//error
+                throw std::runtime_error("invalid json format");
+            }
+            end->next = new jsonValue(raw + i, f);
+            end = end->next;
+            i += f;
+        }
     }
     if (i + 1 != raw_len || raw[i] != ']') {//error
         throw std::runtime_error("invalid json format");

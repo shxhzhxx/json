@@ -92,11 +92,9 @@ class jsonObject {
     friend class jsonKeyValue;
     friend class jsonArray;
 public:
-    jsonObject(const char *_raw);
+    jsonObject(const char *_raw="{}");
 
     jsonObject(const char *_raw, int len);
-
-    jsonObject();
 
     ~jsonObject();
 
@@ -156,11 +154,9 @@ class jsonArray {
     friend class jsonKeyValue;
     friend class jsonObject;
 public:
-    jsonArray(const char *_raw);
+    jsonArray(const char *_raw="[]");
 
     jsonArray(const char *_raw, int len);
-
-    jsonArray();
 
     ~jsonArray();
 
