@@ -5,13 +5,13 @@ c++ json coder
 
 demo:
 
+```C++
+#include "json.h"
+#include <stdio.h>
 
-	#include "json.h"
-	#include <stdio.h>
 
-
-	int main(int argc, char *argv[]) {
-		try{
+int main(int argc, char *argv[]) {
+	try{
 		jsonObject json ("{\"a\":11.5,\"a\":\"17293.5\",\"b\":\"dfda\",\"c\":[-0.5,3,\"ttt\",{\"t1\":\"uuuuu\"}],\"d\":{\"d1\":\"bbbb\"}}");
 		json.put("sh", "shxhzhxx");
 		json.put("obj", (new jsonObject())->put("pdd", 22)->put("pdd", "saozhu")->put("55k", "uu"));
@@ -35,7 +35,8 @@ demo:
 
 		//error: there is no jsonArray value with a key named "a"
 		json.getJsonArray("a");
-		}catch(std::runtime_error err){
+	}catch(std::runtime_error err){
 		printf("error:%s\n",err.what());
-		}
 	}
+}
+```
