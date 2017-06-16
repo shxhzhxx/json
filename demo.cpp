@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
 		json.put("bol", false);
 		json.put("n", -173.16);
 		json.put("n", "uu");
-		json.getJsonObject("d")->put("d2", 23333);
+		json.getJsonObject("d")->put("d2", 23333343);
 
 		printf("%d\n", json.getJsonArray("arr")->getInt(2));
 		printf("%s\n", json.getString("b"));
